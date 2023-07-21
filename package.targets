@@ -1,0 +1,90 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<!-- find game path -->
+	<Choose>
+		<When Condition="$(OS) == 'Unix'">
+			<PropertyGroup>
+				<!-- Linux -->
+				<GamePath Condition="!Exists('$(GamePath)')">$(HOME)/.steam/steam/steamapps/common/Techtonica</GamePath>
+				<GamePath Condition="!Exists('$(GamePath)')">$(HOME)/.local/share/Steam/steamapps/common/Techtonica</GamePath>
+				<GamePath Condition="!Exists('$(GamePath)')">$(HOME)/.var/app/com.valvesoftware.Steam/data/Steam/steamapps/common/Techtonica</GamePath>
+			</PropertyGroup>
+		</When>
+		<When Condition="$(OS) == 'Windows_NT'">
+			<PropertyGroup>
+				<!-- registry paths -->
+				<GamePath Condition="!Exists('$(GamePath)')">$([System.IO.Path]::Combine($([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1457320', 'InstallLocation', null, RegistryView.Registry64, RegistryView.Registry32)), "Techtonica"))</GamePath>
+
+				<!-- derive from Steam library path -->
+				<_SteamLibraryPath>$([MSBuild]::GetRegistryValueFromView('HKEY_CURRENT_USER\SOFTWARE\Valve\Steam', 'SteamPath', null, RegistryView.Registry32))</_SteamLibraryPath>
+				<GamePath Condition="!Exists('$(GamePath)') AND '$(_SteamLibraryPath)' != ''">$(_SteamLibraryPath)/steamapps/common/Techtonica</GamePath>
+
+				<!-- Steam paths -->
+				<GamePath Condition="!Exists('$(GamePath)')">C:\Program Files\Steam\steamapps\common\Techtonica</GamePath>
+				<GamePath Condition="!Exists('$(GamePath)')">C:\Program Files (x86)\Steam\steamapps\common\Techtonica</GamePath>
+			</PropertyGroup>
+		</When>
+	</Choose>
+
+	<PropertyGroup>
+		<DebugSymbols>true</DebugSymbols>
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+		
+		<AssemblyReferencePath Condition="'$(AssemblyReferencePath)' == ''">$([System.IO.Path]::Combine($(GamePath), 'Techtonica_Data', 'Managed'))</AssemblyReferencePath>
+		<GameModsPath Condition="'$(GameModsPath)' == ''">$([System.IO.Path]::Combine($(GamePath), 'BepInEx\plugins'))</GameModsPath>
+		<AssetBundlePath Condition="'$(AssetBundlePath)' == ''">$([System.IO.Path]::Combine($(USERPROFILE), 'My Project', 'Assets', 'AssetBundles', $([System.String]::Copy('$(MSBuildProjectName)').ToLower())))</AssetBundlePath>
+		
+		<EnableModDeployLocal Condition="'$(EnableModDeployLocal)' == ''">true</EnableModDeployLocal>
+		<EnableGameDebugging Condition="'$(EnableGameDebugging)' == ''">true</EnableGameDebugging>
+		<EnableCopyLocal Condition="'$(EnableCopyLocal)' == ''">false</EnableCopyLocal>
+		<EnableDocumentation Condition="'$(EnableDocumentation)' == ''">true</EnableDocumentation>
+	</PropertyGroup>
+
+	<Target Name="ValidateGamePath" AfterTargets="BeforeBuild">
+		<Error Condition="!Exists('$(GamePath)')" Text="The mod build package can't find your game folder. You can specify where to find it" ContinueOnError="false" />
+	</Target>
+
+	<PropertyGroup Condition="'$(OS)' == 'Windows_NT' AND '$(EnableGameDebugging)' == 'true'">
+		<StartAction>Program</StartAction>
+		<StartProgram>$(GamePath)\Techtonica.exe</StartProgram>
+		<StartWorkingDirectory>$(GamePath)</StartWorkingDirectory>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(GamePath)' != '' AND '$(EnableCopyLocal)'">
+		<Reference Include="$(AssemblyReferencePath)\*.dll" Private="true" />
+		<Reference Remove="$(AssemblyReferencePath)\System*.dll" Private="true" />
+		<Reference Remove="$(AssemblyReferencePath)\mscorlib.dll" Private="true" />
+		<Reference Remove="$(AssemblyReferencePath)\netstandard.dll" Private="true" />
+		<Reference Include="$(GameModsPath)\**\*.dll" Private="true" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(GamePath)' != '' AND '!$(EnableCopyLocal)'">
+		<Reference Include="$(AssemblyReferencePath)\*.dll" Private="false" />
+		<Reference Remove="$(AssemblyReferencePath)\System*.dll" Private="false" />
+		<Reference Remove="$(AssemblyReferencePath)\mscorlib.dll" Private="false" />
+		<Reference Remove="$(AssemblyReferencePath)\netstandard.dll" Private="false" />
+		<Reference Include="$(GameModsPath)\**\*.dll" Private="false" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(EnableDocumentation)'">
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>bin\$(Configuration)/$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+	</PropertyGroup>
+		
+	<Target Name="Deploy" AfterTargets="Build" Condition="$(EnableModDeployLocal) == 'true'">
+		<Message Text="Running DeployPack target..." />
+		<ItemGroup>
+			<_DLLToCopy Include="$(ProjectDir)/bin/$(Configuration)/$(TargetFramework)/$(AssemblyName).dll" />
+			<_XMLToCopy Include="$(ProjectDir)/bin/$(Configuration)/$(TargetFramework)/$(AssemblyName).xml" />
+		</ItemGroup>
+		
+		<Copy SourceFiles="@(_DLLToCopy)" DestinationFiles="@(_DLLToCopy->'$(GameModsPath)\$(MSBuildProjectName)\%(RecursiveDir)%(Filename)%(Extension)')" />
+		<Copy Condition="Exists('$(AssetBundlePath)')" SourceFiles="$(AssetBundlePath)" DestinationFiles="$(GameModsPath)\$(MSBuildProjectName)\$([System.String]::Copy('$(MSBuildProjectName)').ToLower()).assets" />
+		<Copy Condition="'$(EnableDocumentation)'" SourceFiles="@(_XMLToCopy)" DestinationFiles="@(_XMLToCopy->'$(GameModsPath)\$(MSBuildProjectName)\%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
+
+	<Target Name="TestMessage" AfterTargets="Build" >
+		<Message Text="***********************************************************" Importance="high"/>
+		<Message Text="$(MSBuildThisFileDirectory)" Importance="high"/>
+		<Message Text="***********************************************************" Importance="high"/>
+	</Target>
+</Project>

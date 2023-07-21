@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<!--Build-->
+		<RootNamespace>ModBuildUtilities</RootNamespace>
+		<TargetFramework>net472</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+		
+		<!--NuGet Package-->
+		<PackageId>StarFluxGames.Techtonica.ModBuildUtilities</PackageId>
+		<Title>Build package for Techtonica mods</Title>
+		<Version>1.0.0</Version>
+		<Authors>StarFluxGames</Authors>
+		<Description>Automates the build configuration for Techtonica mods as well as some utilities. (Based off PlateUp! tool by Yaraizen)</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<None PackagePath="build\StarFluxGames.Techtonica.ModBuildUtilities.dll" Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" Visible="false" />
+		<None PackagePath="build\StarFluxGames.Techtonica.ModBuildUtilities.targets" Include="package.targets" Pack="true" Visible="true" />
+	</ItemGroup>
+</Project>
