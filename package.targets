@@ -31,7 +31,7 @@
 		
 		<AssemblyReferencePath Condition="'$(AssemblyReferencePath)' == ''">$([System.IO.Path]::Combine($(GamePath), 'Techtonica_Data', 'Managed'))</AssemblyReferencePath>
 		<GameModsPath Condition="'$(GameModsPath)' == ''">$([System.IO.Path]::Combine($(GamePath), 'BepInEx\plugins'))</GameModsPath>
-		<CoreBepInExPath Condition="'$(GameModsPath)' == ''">$([System.IO.Path]::Combine($(GamePath), 'BepInEx\core'))</CoreBepInExPath>
+		<CoreBepInExPath>$([System.IO.Path]::Combine($(GamePath), 'BepInEx\core'))</CoreBepInExPath>
 		<AssetBundlePath Condition="'$(AssetBundlePath)' == ''">$([System.IO.Path]::Combine($(USERPROFILE), 'My Project', 'Assets', 'AssetBundles', $([System.String]::Copy('$(MSBuildProjectName)').ToLower())))</AssetBundlePath>
 		
 		<EnableModDeployLocal Condition="'$(EnableModDeployLocal)' == ''">true</EnableModDeployLocal>
@@ -52,20 +52,20 @@
 
 	<ItemGroup Condition="'$(GamePath)' != '' AND '$(EnableCopyLocal)'">
 		<Reference Include="$(AssemblyReferencePath)\*.dll" Private="true" />
-		<Reference Remove="$(AssemblyReferencePath)\System*.dll" Private="true" />
+		<Reference Include="$(GameModsPath)\**\*.dll" Private="true" />
+		<Reference Include="$(CoreBepInExPath)\**\*.dll" Private="true" />
 		<Reference Remove="$(AssemblyReferencePath)\mscorlib.dll" Private="true" />
 		<Reference Remove="$(AssemblyReferencePath)\netstandard.dll" Private="true" />
-		<Reference Include="$(GameModsPath)\**\*.dll" Private="true" />
-		<Reference Include="$(CoreBepInExPath)\*.dll" Private="true" />
+		<Reference Remove="$(AssemblyReferencePath)\System*.dll" Private="true" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(GamePath)' != '' AND '!$(EnableCopyLocal)'">
 		<Reference Include="$(AssemblyReferencePath)\*.dll" Private="false" />
-		<Reference Remove="$(AssemblyReferencePath)\System*.dll" Private="false" />
+		<Reference Include="$(CoreBepInExPath)\**\*.dll" Private="false" />
+		<Reference Include="$(CoreBepInExPath)\0Harmony.dll" Private="false" />
 		<Reference Remove="$(AssemblyReferencePath)\mscorlib.dll" Private="false" />
 		<Reference Remove="$(AssemblyReferencePath)\netstandard.dll" Private="false" />
-		<Reference Include="$(GameModsPath)\**\*.dll" Private="false" />
-		<Reference Include="$(CoreBepInExPath)\*.dll" Private="false" />
+		<Reference Remove="$(AssemblyReferencePath)\System*.dll" Private="false" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(EnableDocumentation)'">
