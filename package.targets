@@ -54,6 +54,7 @@
 		<Reference Include="$(AssemblyReferencePath)\*.dll" Private="true" />
 		<Reference Include="$(GameModsPath)\**\*.dll" Private="true" />
 		<Reference Include="$(CoreBepInExPath)\**\*.dll" Private="true" />
+		<Reference Remove="$(CoreBepInExPath)\**\0Harmony20.dll" Private="true" />
 		<Reference Remove="$(AssemblyReferencePath)\mscorlib.dll" Private="true" />
 		<Reference Remove="$(AssemblyReferencePath)\netstandard.dll" Private="true" />
 		<Reference Remove="$(AssemblyReferencePath)\System*.dll" Private="true" />
@@ -63,6 +64,7 @@
 		<Reference Include="$(AssemblyReferencePath)\*.dll" Private="false" />
 		<Reference Include="$(CoreBepInExPath)\**\*.dll" Private="false" />
 		<Reference Include="$(CoreBepInExPath)\0Harmony.dll" Private="false" />
+		<Reference Remove="$(CoreBepInExPath)\**\0Harmony20.dll" Private="false" />
 		<Reference Remove="$(AssemblyReferencePath)\mscorlib.dll" Private="false" />
 		<Reference Remove="$(AssemblyReferencePath)\netstandard.dll" Private="false" />
 		<Reference Remove="$(AssemblyReferencePath)\System*.dll" Private="false" />

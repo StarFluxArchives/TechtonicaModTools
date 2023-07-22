@@ -11,7 +11,7 @@
 		<!--NuGet Package-->
 		<PackageId>StarFluxGames.Techtonica.ModBuildUtilities</PackageId>
 		<Title>Build package for Techtonica mods</Title>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 		<Authors>StarFluxGames</Authors>
 		<Description>Automates the build configuration for Techtonica mods as well as some utilities. (Based off PlateUp! tool by Yaraizen)</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
