@@ -30,8 +30,8 @@
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 		
 		<AssemblyReferencePath Condition="'$(AssemblyReferencePath)' == ''">$([System.IO.Path]::Combine($(GamePath), 'Techtonica_Data', 'Managed'))</AssemblyReferencePath>
-		<GameModsPath Condition="'$(GameModsPath)' == ''">$([System.IO.Path]::Combine($(GamePath), 'BepInEx\plugins'))</GameModsPath>
-		<CoreBepInExPath>$([System.IO.Path]::Combine($(GamePath), 'BepInEx\core'))</CoreBepInExPath>
+		<GameModsPath Condition="'$(GameModsPath)' == ''">$([System.IO.Path]::Combine($(GamePath), "BepInEx", "plugins"))</GameModsPath>
+		<CoreBepInExPath>$([System.IO.Path]::Combine($(GamePath), "BepInEx", "core"))</CoreBepInExPath>
 		<AssetBundlePath Condition="'$(AssetBundlePath)' == ''">$([System.IO.Path]::Combine($(USERPROFILE), 'My Project', 'Assets', 'AssetBundles', $([System.String]::Copy('$(MSBuildProjectName)').ToLower())))</AssetBundlePath>
 		
 		<EnableModDeployLocal Condition="'$(EnableModDeployLocal)' == ''">true</EnableModDeployLocal>
@@ -53,6 +53,7 @@
 	<ItemGroup Condition="'$(GamePath)' != '' AND '$(EnableCopyLocal)'">
 		<Reference Include="$(AssemblyReferencePath)\*.dll" Private="true" />
 		<Reference Include="$(GameModsPath)\**\*.dll" Private="true" />
+		<Reference Exxclude="$(GameModsPath)\**\*.dll" Private="true" />
 		<Reference Include="$(CoreBepInExPath)\**\*.dll" Private="true" />
 		<Reference Remove="$(CoreBepInExPath)\**\0Harmony20.dll" Private="true" />
 		<Reference Remove="$(AssemblyReferencePath)\mscorlib.dll" Private="true" />
