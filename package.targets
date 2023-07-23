@@ -44,16 +44,10 @@
 		<Error Condition="!Exists('$(GamePath)')" Text="The mod build package can't find your game folder. You can specify where to find it" ContinueOnError="false" />
 	</Target>
 
-	<PropertyGroup Condition="'$(OS)' == 'Windows_NT' AND '$(EnableGameDebugging)' == 'true'">
-		<StartAction>Program</StartAction>
-		<StartProgram>$(GamePath)\Techtonica.exe</StartProgram>
-		<StartWorkingDirectory>$(GamePath)</StartWorkingDirectory>
-	</PropertyGroup>
-
 	<ItemGroup Condition="'$(GamePath)' != '' AND '$(EnableCopyLocal)'">
 		<Reference Include="$(AssemblyReferencePath)\*.dll" Private="true" />
 		<Reference Include="$(GameModsPath)\**\*.dll" Private="true" />
-		<Reference Exxclude="$(GameModsPath)\**\*.dll" Private="true" />
+		<Reference Remove="$(GameModsPath)\$(MSBuildProjectName)\*.dll" Private="true" />
 		<Reference Include="$(CoreBepInExPath)\**\*.dll" Private="true" />
 		<Reference Remove="$(CoreBepInExPath)\**\0Harmony20.dll" Private="true" />
 		<Reference Remove="$(AssemblyReferencePath)\mscorlib.dll" Private="true" />
@@ -63,6 +57,8 @@
 
 	<ItemGroup Condition="'$(GamePath)' != '' AND '!$(EnableCopyLocal)'">
 		<Reference Include="$(AssemblyReferencePath)\*.dll" Private="false" />
+		<Reference Include="$(GameModsPath)\**\*.dll" Private="false" />
+		<Reference Remove="$(GameModsPath)\$(MSBuildProjectName)\*.dll" Private="false" />
 		<Reference Include="$(CoreBepInExPath)\**\*.dll" Private="false" />
 		<Reference Include="$(CoreBepInExPath)\0Harmony.dll" Private="false" />
 		<Reference Remove="$(CoreBepInExPath)\**\0Harmony20.dll" Private="false" />
